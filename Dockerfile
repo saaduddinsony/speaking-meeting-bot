@@ -26,7 +26,7 @@ RUN poetry lock && poetry install --no-interaction --no-ansi --no-root
 COPY . .
 
 # Set Python path to include the current directory
-ENV PYTHONPATH="/app:${PYTHONPATH}"
+ENV PYTHONPATH="/app"
 
 # Compile protocol buffers
 RUN poetry run python -m grpc_tools.protoc --proto_path=./protobufs --python_out=./protobufs frames.proto
