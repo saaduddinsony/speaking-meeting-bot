@@ -36,7 +36,8 @@ async def api_key_middleware(request: Request, call_next):
     # 60s ready-wait timeout before speaking its entry message.
     if request.url.path in ["/docs", "/openapi.json", "/redoc", "/health", "/ready", "/", "/webhook"]:
         return await call_next(request)
-
+    if request.method == "OPTIONS":
+        return await call_next(request)
     api_key = request.headers.get("x-meeting-baas-api-key")
     if not api_key:
         return JSONResponse(
