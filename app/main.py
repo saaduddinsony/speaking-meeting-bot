@@ -76,10 +76,10 @@ docs_url="/docs",
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["*"],  # or your app's specific origin
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"], # Ensure this includes "x-gemini-api-key"
+    allow_methods=["POST", "OPTIONS"],
+    allow_headers=["Content-Type", "x-gemini-api-key"],
 )
 
     # Add API key middleware
