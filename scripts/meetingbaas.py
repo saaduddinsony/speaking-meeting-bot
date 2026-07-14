@@ -19,7 +19,8 @@ from pipecat.processors.aggregators.llm_response_universal import (
     LLMUserAggregatorParams,
 )
 from pipecat.serializers.protobuf import ProtobufFrameSerializer
-from pipecat.services.cartesia.tts import CartesiaTTSService
+#from pipecat.services.cartesia.tts import CartesiaTTSService
+from pipecat.services.piper import PiperTTSService
 from pipecat.services.deepgram.stt import DeepgramSTTService
 
 # from pipecat.services.gladia.stt import GladiaSTTService
@@ -365,11 +366,16 @@ async def main(
     voice_id = persona.get("cartesia_voice_id") or os.getenv("CARTESIA_VOICE_ID")
     log_and_flush(logging.INFO, f"[PERSONA] Using voice ID: {voice_id}")
 
-    tts = CartesiaTTSService(
-        api_key=os.getenv("CARTESIA_API_KEY"),
-        voice_id=voice_id,
-        sample_rate=output_sample_rate,
+    #tts = CartesiaTTSService(
+     #   api_key=os.getenv("CARTESIA_API_KEY"),
+      #  voice_id=voice_id,
+       # sample_rate=output_sample_rate,
+    #)
+    tts = PiperTTSService(
+    settings=PiperTTSService.Settings(
+        voice="en_US-lessac-medium"
     )
+)
     log_and_flush(logging.INFO, f"[TTS] Cartesia TTS initialized with sample_rate={output_sample_rate}, voice_id={voice_id}")
 
     #llm = OpenAILLMService(
