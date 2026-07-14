@@ -34,20 +34,17 @@ async def api_key_middleware(request: Request, call_next):
     # payload's bot_id against bots we launched ourselves. Blocking it meant
     # the ready signal never arrived and every bot sat mute through the full
     # 60s ready-wait timeout before speaking its entry message.
-    if request.url.path in ["/docs", "/openapi.json", "/redoc", "/health", "/ready", "/", "/webhook"]:
+    if request.url.path in ["/docs", "/openapi.json", "/redoc", "/health", "/ready", "/", "/webhook"] or request.method == "OPTIONS":
         return await call_next(request)
-    if request.method == "OPTIONS":
-        return await call_next(request)
-    # Look for either the MeetingBaas key OR the Gemini key
+        
     api_key = request.headers.get("x-meeting-baas-api-key") or request.headers.get("x-gemini-api-key")
     
     if not api_key:
         return JSONResponse(
-            status_code=status.HTTP_401_UNAUTHORIZED,
+            status_code=401,
             content={"message": "Missing required API key in headers"},
         )
-
-    # Add the API key to the request state for use in routes
+    
     request.state.api_key = api_key
     return await call_next(request)
 
@@ -59,8 +56,6 @@ def create_app() -> FastAPI:
     Returns:
         A configured FastAPI application
     """
-
-from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
 title="Speaking Meeting Bot API",
@@ -74,13 +69,13 @@ openapi_url="/openapi.json",
 docs_url="/docs",
 )  
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # or your app's specific origin
-    allow_credentials=True,
-    allow_methods=["POST", "OPTIONS"],
-    allow_headers=["Content-Type", "x-gemini-api-key"],
-)
+#app.add_middleware(
+ #   CORSMiddleware,
+  #  allow_origins=["*"],  # or your app's specific origin
+   # allow_credentials=True,
+    #allow_methods=["POST", "OPTIONS"],
+    #allow_headers=["Content-Type", "x-gemini-api-key"],
+#)
 
     # Add API key middleware
     app.middleware("http")(api_key_middleware)
@@ -194,12 +189,12 @@ app.add_middleware(
 
     # Add CORS middleware
     app.add_middleware(
-        CORSMiddleware,
-        allow_origins=cors_origins,
-        allow_credentials=allow_credentials,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"], # This explicitly permits x-gemini-api-key
+)
 
     # Include the routers
     app.include_router(app_router)
