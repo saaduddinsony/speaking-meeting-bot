@@ -56,18 +56,27 @@ def create_app() -> FastAPI:
     Returns:
         A configured FastAPI application
     """
-    app = FastAPI(
-        title="Speaking Meeting Bot API",
-        description="API for deploying AI-powered speaking agents in video meetings. Combines MeetingBaas for meeting connectivity with Pipecat for voice AI processing.",
-        version=APP_VERSION,
-        contact={
-            "name": "Speaking Bot API by MeetingBaas",
-            "url": "https://meetingbaas.com",
-        },
-        openapi_url="/openapi.json",  # Explicitly set the OpenAPI schema URL
-        docs_url="/docs",  # Swagger UI path
-        # redoc_url="/redoc",  # Explicitly set the ReDoc URL
-    )
+from fastapi.middleware.cors import CORSMiddleware
+
+app = FastAPI(
+title="Speaking Meeting Bot API",
+description="API for deploying AI-powered speaking agents in video meetings. Combines MeetingBaas for meeting connectivity with Pipecat for voice AI processing.",
+version=APP_VERSION,
+contact={
+"name": "Speaking Bot API by MeetingBaas",
+"url": "https://meetingbaas.com",
+},
+openapi_url="/openapi.json",
+docs_url="/docs",
+)  
+
+app.add_middleware(
+CORSMiddleware,
+allow_origins=[""],
+allow_credentials=True,
+allow_methods=[""],
+allow_headers=["*"],
+)
 
     # Add API key middleware
     app.middleware("http")(api_key_middleware)
