@@ -38,11 +38,13 @@ async def api_key_middleware(request: Request, call_next):
         return await call_next(request)
     if request.method == "OPTIONS":
         return await call_next(request)
-    api_key = request.headers.get("x-meeting-baas-api-key")
+    # Look for either the MeetingBaas key OR the Gemini key
+    api_key = request.headers.get("x-meeting-baas-api-key") or request.headers.get("x-gemini-api-key")
+    
     if not api_key:
         return JSONResponse(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            content={"message": "Missing MeetingBaas API key in x-meeting-baas-api-key header"},
+            content={"message": "Missing required API key in headers"},
         )
 
     # Add the API key to the request state for use in routes
