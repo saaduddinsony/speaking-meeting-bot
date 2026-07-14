@@ -59,6 +59,7 @@ def create_app() -> FastAPI:
     Returns:
         A configured FastAPI application
     """
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(
@@ -74,11 +75,11 @@ docs_url="/docs",
 )  
 
 app.add_middleware(
-CORSMiddleware,
-allow_origins=[""],
-allow_credentials=True,
-allow_methods=[""],
-allow_headers=["*"],
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"], # Ensure this includes "x-gemini-api-key"
 )
 
     # Add API key middleware
